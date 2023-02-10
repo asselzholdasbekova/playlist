@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getRepository } from "typeorm";
+import { AppDataSource } from "../data-source";
 import { Author } from "../entity/Author";
 
 export class AuthorController {
@@ -8,18 +8,18 @@ export class AuthorController {
         const newAuthor = {
             fullname: req.body.fullname
         }
-        const author = getRepository(Author).create(newAuthor);
-        const result = await getRepository(Author).save(author);
+        const author = AppDataSource.getRepository(Author).create(newAuthor);
+        const result = await AppDataSource.getRepository(Author).save(author);
 
         return res.json(result);
     }
 
     static updateAuthor = async (req: Request, res: Response) => {
-        const author = await getRepository(Author).findOneBy({ id: Number(req.params.id) });
+        const author = await AppDataSource.getRepository(Author).findOneBy({ id: Number(req.params.id) });
 
         if (author) {
-            getRepository(Author).merge(author, req.body);
-            const result = await getRepository(Author).save(author);
+            AppDataSource.getRepository(Author).merge(author, req.body);
+            const result = await AppDataSource.getRepository(Author).save(author);
 
             return res.json(result);
         }
@@ -28,17 +28,17 @@ export class AuthorController {
 
     static deleteAuthor = async (req: Request, res: Response) => {
         const id = req.params.id;
-        const author = await getRepository(Author).delete(id);
+        const author = await AppDataSource.getRepository(Author).delete(id);
         return res.json(author);
     }
 
     static getAuthorById = async (req: Request, res: Response) => {
-        const author = await getRepository(Author).findOneBy({ id: Number(req.params.id) });
+        const author = await AppDataSource.getRepository(Author).findOne({ where: { id: Number(req.params.id) }, relations: { songs: true } });
         return res.json(author);
     }
 
     static getAllAuthors = async (req: Request, res: Response) => {
-        const result = await getRepository(Author).find();
+        const result = await AppDataSource.getRepository(Author).find({ relations: { songs: true } });
         return res.json(result);
     }
     
