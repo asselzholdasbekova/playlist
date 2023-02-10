@@ -40,6 +40,23 @@ export class SongController {
         return res.json(song);
     }
 
+    static getSongsBy = async (req: Request, res: Response) => {
+        const songs = await AppDataSource.getRepository(Song).find(
+            { 
+                where: {
+                    author: req.body.author_id,
+                    genre: req.body.genre_id,
+                    yearOfRelease: req.body.year_of_release
+                }, 
+                relations: { 
+                    genre: true, 
+                    author: true 
+                } 
+            }
+        );
+        return res.json(songs);
+    }
+
     static getAllSongs = async (req: Request, res: Response) => {
         const result = await AppDataSource.getRepository(Song).find({ relations: { genre: true, author: true } });
         return res.json(result);
