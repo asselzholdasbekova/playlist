@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "../data-source";
 import { Song } from "../entity/Song";
+import { SelectQueryBuilder } from 'typeorm';
 
 export class SongController {
 
@@ -41,20 +42,21 @@ export class SongController {
     }
 
     static getSongsBy = async (req: Request, res: Response) => {
-        const songs = await AppDataSource.getRepository(Song).find(
-            { 
-                where: {
-                    author: req.body.author_id,
-                    genre: req.body.genre_id,
-                    yearOfRelease: req.body.year_of_release
-                }, 
-                relations: { 
-                    genre: true, 
-                    author: true 
-                } 
-            }
-        );
-        return res.json(songs);
+        const query = AppDataSource
+        .getRepository(Song)
+        .createQueryBuilder("song");
+
+        if (req.body.author_id) {
+            query.andWhere("song.author_id  = :author", { author: req.body.author_id });
+        }
+        if (req.body.genre_id) {
+            query.andWhere("song.genre_id  = :genre", { genre: req.body.genre_id });
+        }
+        if (req.body.year_of_release) {
+            query.andWhere("song.year_of_release  = :yearOfRelease", { yearOfRelease: req.body.year_of_release });
+        }
+    
+        return res.json(await query.getMany());
     }
 
     static getAllSongs = async (req: Request, res: Response) => {

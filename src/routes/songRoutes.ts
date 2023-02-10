@@ -8,6 +8,6 @@ router.get("/songs", SongController.getAllSongs);
 router.get("/songs/:id", SongController.getSongById);
 router.put("/songs/:id", SongController.updateSong);
 router.delete("/songs/:id", SongController.deleteSong);
-router.get("/songs/filter", SongController.getSongsBy)
+router.post("/songs/filter", SongController.getSongsBy);
 
 export { router as songRouter };
