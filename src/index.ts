@@ -16,7 +16,7 @@ AppDataSource.initialize().then(async () => {
     app.use(authorRouter);
     app.use(genreRouter);
 
-    const port = 3001;
+    const port = process.env.PORT || 3001;
 
     app.listen(port, () => {
         console.log(`Server started listening on port ${ port }`);
